@@ -49,6 +49,7 @@ dependencies:
   intl: ^0.19.0
   path_provider: ^2.1.4
   smooth_page_indicator: ^1.2.0+3
+  syncfusion_flutter_charts: ^27.1.56
   table_calendar: ^3.1.2
   
 dev_dependencies:

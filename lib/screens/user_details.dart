@@ -1,12 +1,9 @@
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:ela/screens/user_edit.dart';
+
+import 'package:ela/model/mood/mood_model.dart';
 import 'package:ela/theme/app_color.dart';
-import 'package:ela/theme/app_textstyle.dart';
-import 'package:ela/widget/about.dart';
 import 'package:ela/widget/drawer.dart';
-import 'package:ela/widget/legal_terms.dart';
-import 'package:ela/widget/privacy_policy.dart';
-import 'package:gap/gap.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 import '../database/user_functions.dart';
 import '../model/user/user.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -16,6 +13,7 @@ import 'package:google_fonts/google_fonts.dart';
 class UserDetails extends StatefulWidget {
   const UserDetails({super.key});
 
+
   @override
   State<UserDetails> createState() => _UserDetailsState();
 }
@@ -24,12 +22,19 @@ class _UserDetailsState extends State<UserDetails> {
   User? _user;
   User? userdata;
   Future<List<FlSpot>>? _spotsFuture;
+  late Map<DateTime,String> moodDatabase;
+
+
+// ------------------------------------
+  List<MoodModel> weeklyMoodData = [];
+  late Box<MoodModel> moodBox;
+// --------------------------------------
 
   @override
   void initState() {
     super.initState();
     loaddata();
-    // _spotsFuture = fetchData();
+    openBoxAndLoadData();
   }
 
   void loaddata() async {
@@ -38,44 +43,8 @@ class _UserDetailsState extends State<UserDetails> {
       _user = userdata;
     });
   }
-
-
-//  Future<List<FlSpot>> fetchData() async {
-//   final box = await Hive.openBox<MoodModel>('mood');
-//   List<FlSpot> spots = [];
-
-//   for (var data in box.values) {
-//     // Attempt to parse the mood value as a double, ensure it's valid
-//     double value = double.tryParse(data.mood) ?? 0.0;
-
-//     // Convert DateTime to a double using millisecondsSinceEpoch
-//     double xValue = data.date.millisecondsSinceEpoch.toDouble();
-
-//     // Check if both xValue and value are finite numbers
-//     if (xValue.isFinite && !xValue.isNaN && value.isFinite && !value.isNaN) {
-//       spots.add(FlSpot(xValue, value));
-//     }
-//   }
-
-//   return spots;
-// }
-
-
-
-
- 
-
+  
   @override
-
-  //  Future<void> _fetchAndDisplayUser() async {
-  //   User? user = await fetchUserdata();  // Fetch the user data from Hive
-
-  //   // Update the state to reflect the fetched data
-  //   setState(() {
-  //     _user = user;
-
-  //   });
-  // }
   final List<Widget> containerList = [
     Container(
         height: 300,
@@ -359,6 +328,35 @@ class _UserDetailsState extends State<UserDetails> {
         ))),
   ];
 
+  Future<void> openBoxAndLoadData() async {
+    // Initialize Hive and open the box
+    await Hive.initFlutter();
+    moodBox = await Hive.openBox<MoodModel>('mood');
+    loadWeeklyMoodData();
+  }
+  String formatDate(DateTime date) => '${date.year}-${date.month}-${date.day}';
+void loadWeeklyMoodData() {
+    final now = DateTime.now();
+    final weekData = <MoodModel>[];
+    // Fetch data for the last 7 days
+    for (int i = 0; i < 7; i++) {
+      final date = DateTime(now.year, now.month, now.day - i);
+      final formattedDate = formatDate(date);
+      final moodData = moodBox.get(formattedDate);
+      if (moodData != null) {
+        weekData.add(moodData);
+      }
+    }
+     setState(() {
+      weeklyMoodData = weekData.reversed.toList(); // Display oldest to newest
+    });
+  }
+
+
+// NEW FOR GRAPH -8--8-8-88-8-8-8-8-8---------------- - - - - - - --  - -- - - -  -- - - -- - - -
+
+// FOR GRAPH --------------------------------- -- -- - -- - - - -- - - -- - - - - -- - -  
+
 
   @override
   Widget build(BuildContext context) {
@@ -405,354 +403,220 @@ class _UserDetailsState extends State<UserDetails> {
             )
           ],
         ),
-        body: SingleChildScrollView(
-            child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 1.5),
-                      borderRadius: BorderRadius.circular(30),
-                      color: const Color.fromRGBO(245, 255, 210, 1),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color.fromARGB(255, 12, 2, 10),
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    width: double.infinity,
-                    height: 200,
-                    child: Row(
-                      children: [
-                        Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(width: 1.5),
-                                borderRadius: BorderRadius.circular(80),
-                              ),
-                              height: 140,
-                              width: 140,
-                              child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(100),
-                                  child: _user?.image == null
-                                      ? const Image(
-                                          fit: BoxFit.fill,
-                                          image: AssetImage(
-                                              'assets/images/IMG_7399.JPG'))
-                                      : Image.memory(
-                                          _user!.image!,
-                                          fit: BoxFit.fill,
-                                      )
+        //  SingleChildScrollView(
+        //     child: Padding(
+        //         padding: const EdgeInsets.all(20.0),
+        //         child: Column(children: [
+        //           Container(
+        //             decoration: BoxDecoration(
+        //               border: Border.all(width: 1.5),
+        //               borderRadius: BorderRadius.circular(30),
+        //               color: const Color.fromRGBO(245, 255, 210, 1),
+        //               boxShadow: const [
+        //                 BoxShadow(
+        //                   color: Color.fromARGB(255, 12, 2, 10),
+        //                   offset: Offset(0, 4),
+        //                 ),
+        //               ],
+        //             ),
+        //             width: double.infinity,
+        //             height: 200,
+        //             child: Row(
+        //               children: [
+        //                 Padding(
+        //                     padding: const EdgeInsets.all(8.0),
+        //                     child: Container(
+        //                       decoration: BoxDecoration(
+        //                         border: Border.all(width: 1.5),
+        //                         borderRadius: BorderRadius.circular(80),
+        //                       ),
+        //                       height: 140,
+        //                       width: 140,
+        //                       child: ClipRRect(
+        //                           borderRadius: BorderRadius.circular(100),
+        //                           child: _user?.image == null
+        //                               ? const Image(
+        //                                   fit: BoxFit.fill,
+        //                                   image: AssetImage(
+        //                                       'assets/images/IMG_7399.JPG'))
+        //                               : Image.memory(
+        //                                   _user!.image!,
+        //                                   fit: BoxFit.fill,
+        //                               )
                                       
-                                         )),
-                            ),
-                            const Gap(10),
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              _user?.name ?? 'Not Available',
-                              style: ElaTextStyle.title,
-                            ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Text(_user?.address ?? 'Not Available',style: ElaTextStyle.subTitle,),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Text(_user?.dob?? 'Not Available',style: ElaTextStyle.subTitle,),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Text(_user?.phone.toString() ?? 'Not Available',style: ElaTextStyle.subTitle,)
-                          ],
-                        )
-                      ],
+        //                                  )),
+        //                     ),
+        //                     const Gap(10),
+        //                 Column(
+        //                   mainAxisSize: MainAxisSize.min,
+        //                   crossAxisAlignment: CrossAxisAlignment.start,
+        //                   mainAxisAlignment: MainAxisAlignment.center,
+        //                   children: [
+        //                     Text(
+        //                       _user?.name ?? 'Not Available',
+        //                       style: ElaTextStyle.title,
+        //                     ),
+        //                     const SizedBox(
+        //                       height: 5,
+        //                     ),
+        //                     Text(_user?.address ?? 'Not Available',style: ElaTextStyle.subTitle,),
+        //                     const SizedBox(
+        //                       height: 5,
+        //                     ),
+        //                     Text(_user?.dob?? 'Not Available',style: ElaTextStyle.subTitle,),
+        //                     const SizedBox(
+        //                       height: 5,
+        //                     ),
+        //                     Text(_user?.phone.toString() ?? 'Not Available',style: ElaTextStyle.subTitle,)
+        //                   ],
+        //                 )
+        //               ],
+        //             ),
+        //           ),
+        //           const SizedBox(
+        //             height: 30,
+        //           ),
+        //           Align(
+        //             alignment: Alignment.centerLeft,
+        //             child: Stack(
+        //               children: [
+        //                 Padding(
+        //                   padding: const EdgeInsets.only(top: 5.0),
+        //                   child: Container(
+        //                     height: 26,
+        //                     width: 70,
+        //                     decoration: BoxDecoration(
+        //                         color: const Color.fromRGBO(245, 255, 210, 1),
+        //                         borderRadius: BorderRadius.circular(5)),
+        //                   ),
+        //                 ),
+        //                 const Text(
+        //                   'Goals',
+        //                   style: TextStyle(
+        //                       fontSize: 25, fontWeight: FontWeight.w500),
+        //                 ),
+        //               ],
+        //             ),
+        //           ),
+        //           CarouselSlider(
+        //             options: CarouselOptions(
+        //               height: 300,
+        //               autoPlay: true,
+        //               enlargeCenterPage: true,
+        //               aspectRatio: 16 / 9,
+        //               viewportFraction: 0.8,
+        //             ),
+        //             items: containerList.map((container) {
+        //               return Builder(
+        //                 builder: (BuildContext context) {
+        //                   return container;
+        //                 },
+        //               );
+        //             }).toList(),
+        //           ),
+        //           const SizedBox(
+        //             height: 50,
+        //           ),
+                 
+        //         ]))),
+        drawer: CustomDrawer(context: context),
+
+
+
+
+
+
+
+        // GRAPH ARE HERE- - -- - - -- - - -- -  -- --  - -- - - - - - --  -- -
+        body: Center(
+          child: Container(
+            height: 300,
+            width: 300,
+            child: Padding(padding: 
+            const EdgeInsets.all(8.0),
+            child: weeklyMoodData.isEmpty
+                ? const Center(child: Text('No mood data available for the past week'))
+                : SfCartesianChart(
+                  
+                  plotAreaBackgroundColor: ElaColors.lightgrey,
+                    primaryXAxis: const CategoryAxis(
+                      // title: AxisTitle(text: 'Day'),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Stack(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 5.0),
-                          child: Container(
-                            height: 26,
-                            width: 70,
-                            decoration: BoxDecoration(
-                                color: const Color.fromRGBO(245, 255, 210, 1),
-                                borderRadius: BorderRadius.circular(5)),
-                          ),
-                        ),
-                        const Text(
-                          'Goals',
-                          style: TextStyle(
-                              fontSize: 25, fontWeight: FontWeight.w500),
-                        ),
-                      ],
+                    primaryYAxis: const NumericAxis(
+                      // title: AxisTitle(text: 'Mood Level'),
+                      minimum: 0,
+                      maximum: 6,
+                      interval: 1,
+                      // axisLabelFormatter:,
                     ),
+                    series: [
+                      // LineSeries<MoodModel, String>(
+                      //   dataSource: weeklyMoodData,
+                      //   xValueMapper: (MoodModel mood, _) => mood.date.day.toString(),
+                      //   yValueMapper: (MoodModel mood, _) => moodToValue(mood.mood),
+                      //   markerSettings: const MarkerSettings(isVisible: true),
+                      //   name: 'Mood',
+                      // ),
+                      ColumnSeries<MoodModel, String>(
+                        dataSource: weeklyMoodData,
+                        xValueMapper: (MoodModel mood, _) => mood.date.day.toString(),
+                        yValueMapper: (MoodModel mood, _) => moodToValue(mood.mood),
+                        // name: 'Mood Levels',
+                        pointColorMapper: (MoodModel mood, _)=> colorselector(mood.mood),
+                        width: 0.6,
+                      )
+                    ],
+                    // title: const ChartTitle(text: 'Mood Over the Past Week'),
                   ),
-                  CarouselSlider(
-                    options: CarouselOptions(
-                      height: 300,
-                      autoPlay: true,
-                      enlargeCenterPage: true,
-                      aspectRatio: 16 / 9,
-                      viewportFraction: 0.8,
-                    ),
-                    items: containerList.map((container) {
-                      return Builder(
-                        builder: (BuildContext context) {
-                          return container;
-                        },
-                      );
-                    }).toList(),
                   ),
-                  const SizedBox(
-                    height: 50,
-                  ),
-                  // const Align(
-                  //     alignment: Alignment.centerLeft,
-                  //     child: Text(
-                  //       'Mood',
-                  //       style: TextStyle(fontSize: 25),
-                  //     )),
-                  // Container(
-                  //     height: 300,
-                  //     decoration: BoxDecoration(
-                  //       border: Border.all(width: 1.5),
-                  //       borderRadius: BorderRadius.circular(30),
-                  //       color: const Color.fromARGB(255, 213, 238, 112),
-                  //       boxShadow: const [
-                  //         BoxShadow(
-                  //           color: Color.fromARGB(255, 12, 2, 10),
-                  //           offset: Offset(0, 4),
-                  //         ),
-                  //       ],
-                  //     ),
-                  //     child: LineChart(LineChartData(
-                  //       maxY: 5000, // Maximum limit for steps
-                  //       minY: 0,
-                  //       gridData: const FlGridData(show: true), // Grid lines
-                  //       titlesData: FlTitlesData(
-                  //         bottomTitles: AxisTitles(
-                  //           sideTitles: SideTitles(
-                  //             showTitles: true,
-                  //             getTitlesWidget: (value, meta) {
-                  //               switch (value.toInt()) {
-                  //                 case 0:
-                  //                   return const Text('Sun');
-                  //                 case 1:
-                  //                   return const Text('Mon');
-                  //                 case 2:
-                  //                   return const Text('Tue');
-                  //                 case 3:
-                  //                   return const Text('Wed');
-                  //                 case 4:
-                  //                   return const Text('Thu');
-                  //                 case 5:
-                  //                   return const Text('Fri');
-                  //                 case 6:
-                  //                   return const Text('Sat');
-                  //                 default:
-                  //                   return const Text('');
-                  //               }
-                  //             },
-                  //           ),
-                  //         ),
-                  //         leftTitles: AxisTitles(
-                  //           sideTitles: SideTitles(
-                  //             showTitles: true,
-                  //             interval: 1000, // Steps interval for Y-axis
-                  //             getTitlesWidget: (value, meta) {
-                  //               return Text(
-                  //                   '${value.toInt()}'); // Display step count
-                  //             },
-                  //           ),
-                  //         ),
-                  //       ),
-                  //       borderData: FlBorderData(show: true),
-                  //       lineBarsData: [
-                  //         LineChartBarData(
-                  //           spots: [
-                  //             const FlSpot(0, 3200),
-                  //             const FlSpot(1, 3100),
-                  //             const FlSpot(2, 2000),
-                  //             const FlSpot(3, 1800),
-                  //             const FlSpot(4, 1700),
-                  //             const FlSpot(5, 1500),
-                  //             const FlSpot(6, 2900),
-                  //           ],
-                  //           barWidth: 4,
-                  //           belowBarData: BarAreaData(show: false),
-                  //         ),
-                  //       ],
-                  //     ))),
+          ),
+        ),
+    );
+  
+
+  
 
 
-      //           Padding(
-      //   padding: const EdgeInsets.all(16.0),
-      //   child: HeatMapCalendar(
-      //     // input: heatMapData,
-      //     // colorsets: ,
-      //     // weekDaysLabels: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
-      //     // monthsLabels: ['January', 'February', 'March', 'April', 'May', 'June', 
-      //     //                'July', 'August', 'September', 'October', 'November', 'December'],
-      //     // squareSize: 40.0,
-      //     // textOpacity: 0.3,
-      //     // labelTextColor: Colors.black,
-      //     // dayTextColor: Colors.black,
-      //   ),
-      // ),
+}
 
-
-      // const Text(
-      //       'Your Moods Over the Month',
-      //       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-      //     ),
-      //     const SizedBox(height: 20),
-      //     Expanded(
-      //       flex: 8,
-          
-      //       child:LineChart(
-              
-      //     LineChartData(
-            
-      //       titlesData: FlTitlesData(
-      //         leftTitles: AxisTitles(
-      //           sideTitles: SideTitles(showTitles: true),
-      //         ),
-      //         bottomTitles: AxisTitles(
-      //           sideTitles: SideTitles(showTitles: true),
-      //         ),
-      //       ),
-      //       borderData: FlBorderData(show: true),
-      //       gridData: FlGridData(show: true),
-      //       lineBarsData: [
-      //         LineChartBarData(
-      //           spots: _moodSpots,
-      //           isCurved: true,
-      //           color: Colors.blue,
-      //           barWidth: 4,
-      //           isStrokeCapRound: true,
-      //         )
-      //       ],
-      //     )))
-
-
-// FutureBuilder<List<FlSpot>>(
-//       future: _spotsFuture,
-//       builder: (context, snapshot) {
-//         if (snapshot.connectionState == ConnectionState.waiting) {
-//           return const CircularProgressIndicator();
-//         } else if (snapshot.hasError) {
-//           return Text('Error: ${snapshot.error}');
-//         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-//           return const Text('No data available');
-//         }
-
-//         // Get the data from the snapshot
-//         List<FlSpot> spots = snapshot.data!;
-
-//         // Create the LineChart using the retrieved spots
-//         return LineChart(
-//           LineChartData(
-//             minX: spots.first.x,
-//             maxX: spots.last.x,
-//             minY: 0,
-//             maxY: 3, // Adjust this based on your mood value range
-//             lineBarsData: [
-//               LineChartBarData(
-//                 spots: spots,
-//                 isCurved: true,
-//                 barWidth: 2,
-//                 color: Colors.blue,
-//                 belowBarData: BarAreaData(show: false),
-//               ),
-//             ],
-//             titlesData: FlTitlesData(
-//               bottomTitles: AxisTitles(
-//                 sideTitles: SideTitles(
-//                   showTitles: true,
-//                   getTitlesWidget: (value, meta) {
-//                     // Convert x-axis value back to DateTime for display
-//                     DateTime date =
-//                         DateTime.fromMillisecondsSinceEpoch(value.toInt());
-//                     return Text('${date.day}/${date.month}');
-//                   },
-//                 ),
-//               ),
-//               leftTitles: const AxisTitles(
-//                 sideTitles: SideTitles(showTitles: true),
-//               ),
-//             ),
-//           ));
-//       })
-                ]))),
-                drawer: CustomDrawer(context: context)
-                );
+ dynamic colorselector(String mood) {
+  switch (mood) {
+    case 'excelent':
+      return ElaColors.emojicolor1;
+    case 'very good':
+      return ElaColors.emojicolor2;
+    case 'good':
+      return ElaColors.emojicolor3;
+    case 'not bad':
+      return ElaColors.emojicolor4;
+    case 'bad':
+      return ElaColors.emojicolor5;
+    case 'very bad':
+      return ElaColors.emojicolor6;
+    default:
+      return const Color.fromARGB(255, 255, 255, 255);
   }
-//   Color _getMoodColor(String mood) {
-//   switch (mood) {
-//     case 'Happy':
-//       return Colors.green;
-//     case 'Sad':
-//       return Colors.blue;
-//     case 'Angry':
-//       return Colors.red;
-//     case 'Neutral':
-//       return Colors.yellow;
-//     default:
-//       return Colors.grey; // For days with no mood or unknown values
-//   }
-// }
-// final Map<int, Color> colorSets = {
-//   0: Colors.grey,   // Default or no mood
-//   1: Colors.blue,   // Sad
-//   2: Colors.yellow, // Neutral
-//   3: Colors.green,  // Happy
-// };
-// Map<DateTime, int> _prepareHeatMapData(Map<DateTime, String> moodData) {
-//   Map<DateTime, int> heatMapData = {};
-
-//   moodData.forEach((date, mood) {
-//     heatMapData[date] = _getMoodColor(mood);
-//   });
-
-//   return heatMapData;
-// }
+}
 
 
 
 
-
-
-// // Format x-axis labels (e.g., dates)
-//   Widget bottomTitleWidgets(double value, TitleMeta meta) {
-//     final date = DateTime.fromMillisecondsSinceEpoch(value.toInt());
-//     return Padding(
-//       padding: const EdgeInsets.only(top: 8.0),
-//       child: Text(
-//         '${date.day}/${date.month}',  // Example: 12/10 for 12th October
-//         style: const TextStyle(fontSize: 10),
-//       ),
-//     );
-//   }
-
-//   // Format y-axis labels (e.g., values)
-//   Widget leftTitleWidgets(double value, TitleMeta meta) {
-//     return Text(
-//       value.toStringAsFixed(1),  // Round to 1 decimal place for simplicity
-//       style: const TextStyle(fontSize: 10),
-//     );
-//   }
-
+  int moodToValue(String mood) {
+  switch (mood) {
+    case 'excelent':
+      return 6;
+    case 'very good':
+      return 5;
+    case 'good':
+      return 4;
+    case 'not bad':
+      return 3;
+    case 'bad':
+      return 2;
+    case 'very bad':
+      return 1;
+    default:
+      return 0;
+  }
+}
 }

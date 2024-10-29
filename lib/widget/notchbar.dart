@@ -1,4 +1,5 @@
 import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
+import 'package:ela/theme/app_color.dart';
 import '../screens/calender.dart';
 import '../screens/goals.dart';
 import '../screens/home.dart';
@@ -27,6 +28,7 @@ class NotchbarState extends State<Notchbar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ElaColors.white,
       body: _pages[_controller.index],
       bottomNavigationBar: AnimatedNotchBottomBar(
         notchBottomBarController: _controller,
@@ -66,9 +68,9 @@ class NotchbarState extends State<Notchbar> {
           });
         },
         kIconSize: 25,
-        kBottomRadius: 30,
+        kBottomRadius: 40,
         bottomBarHeight: 60,
-        color: const Color.fromRGBO(217, 217, 217, 1),
+        color:const Color.fromARGB(255, 229, 228, 228) ,
         notchColor: const Color.fromRGBO(194, 246, 58, 1),
         shadowElevation: 5,
         showTopRadius: true,
