@@ -10,6 +10,4 @@ class ElaTextStyle{
   static const TextStyle smallSubTitle=TextStyle(fontSize: 12);
   static const TextStyle formitems=TextStyle(fontSize: 20,fontWeight: FontWeight.w400);
   static const TextStyle small = TextStyle(fontSize: 15,fontWeight: FontWeight.w500);
-  // hjgjhghghgghg
-  // jhhuuyuy
 }

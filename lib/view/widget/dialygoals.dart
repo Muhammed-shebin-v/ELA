@@ -7,17 +7,23 @@ import 'package:flutter/material.dart';
 class CustomDialyGoals extends StatefulWidget {
   final String title;
   final String subtitle;
-  final String count;
   final double titlelength;
   final int goalindex;
+  final dynamic increasefunction;
+  final dynamic decreasefunction;
+  final dynamic currentIntake;
+  final dynamic dialyGoal;
 
   const CustomDialyGoals(
       {super.key,
       required this.title,
       required this.subtitle,
-      required this.count,
       required this.titlelength,
-      required this.goalindex});
+      required this.goalindex,
+      required this.increasefunction,
+      required this.decreasefunction,
+      required this.currentIntake,
+      required this.dialyGoal, required String count});
 
   @override
   State<CustomDialyGoals> createState() => _CustomDialyGoalsState();
@@ -29,11 +35,14 @@ class _CustomDialyGoalsState extends State<CustomDialyGoals> {
     return CustomContainer(
       boxshadow: true,
       color: ElaColors.lightgrey,
-      child:Padding(
+      child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: <Widget>[
-            CustomTitle(heading: widget.title, length: widget.titlelength,),
+            CustomTitle(
+              heading: widget.title,
+              length: widget.titlelength,
+            ),
             const SizedBox(
               height: 10,
             ),
@@ -46,18 +55,16 @@ class _CustomDialyGoalsState extends State<CustomDialyGoals> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-
                   IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.add),
+                    onPressed: widget.decreasefunction,
+                    icon: const Icon(Icons.remove),
                     iconSize: 20,
                   ),
-
-                  Text(widget.count),
-
+                  Text(
+                      '${widget.title}:${widget.currentIntake.toStringAsFixed(0)} ml'),
                   IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.remove),
+                    onPressed: widget.increasefunction,
+                    icon: const Icon(Icons.add),
                     iconSize: 20,
                   )
                 ],
@@ -72,7 +79,7 @@ class _CustomDialyGoalsState extends State<CustomDialyGoals> {
                 borderRadius: BorderRadius.circular(30),
                 backgroundColor: Colors.white,
                 color: const Color.fromRGBO(194, 246, 58, 1),
-                value: 0.9,
+                value: widget.currentIntake / widget.dialyGoal,
               ),
             )
           ],
@@ -80,8 +87,4 @@ class _CustomDialyGoalsState extends State<CustomDialyGoals> {
       ),
     );
   }
-
-
-
-
 }

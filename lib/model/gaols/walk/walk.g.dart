@@ -1,35 +1,35 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'water_model.dart';
+part of 'walk.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class WaterModelAdapter extends TypeAdapter<WaterModel> {
+class WalkModelAdapter extends TypeAdapter<WalkModel> {
   @override
-  final int typeId = 6;
+  final int typeId = 7;
 
   @override
-  WaterModel read(BinaryReader reader) {
+  WalkModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return WaterModel(
+    return WalkModel(
       date: fields[0] as DateTime,
-      value: fields[1] as int,
+      intake: fields[1] as double,
     );
   }
 
   @override
-  void write(BinaryWriter writer, WaterModel obj) {
+  void write(BinaryWriter writer, WalkModel obj) {
     writer
       ..writeByte(2)
       ..writeByte(0)
       ..write(obj.date)
       ..writeByte(1)
-      ..write(obj.value);
+      ..write(obj.intake);
   }
 
   @override
@@ -38,7 +38,7 @@ class WaterModelAdapter extends TypeAdapter<WaterModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is WaterModelAdapter &&
+      other is WalkModelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

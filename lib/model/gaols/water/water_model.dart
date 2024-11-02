@@ -8,9 +8,9 @@ class WaterModel{
   DateTime date;
 
   @HiveField(1)
-  int value;
+  double intake;
 
   WaterModel(
       {required this.date,
-       required this.value});
+       required this.intake});
 }
