@@ -8,7 +8,7 @@ class CustomDialyGoals extends StatefulWidget {
   final String title;
   final String subtitle;
   final double titlelength;
-  final int goalindex;
+  final String  unit;
   final dynamic increasefunction;
   final dynamic decreasefunction;
   final dynamic currentIntake;
@@ -19,11 +19,11 @@ class CustomDialyGoals extends StatefulWidget {
       required this.title,
       required this.subtitle,
       required this.titlelength,
-      required this.goalindex,
+      required this.unit,
       required this.increasefunction,
       required this.decreasefunction,
       required this.currentIntake,
-      required this.dialyGoal, required String count});
+      required this.dialyGoal});
 
   @override
   State<CustomDialyGoals> createState() => _CustomDialyGoalsState();
@@ -61,7 +61,7 @@ class _CustomDialyGoalsState extends State<CustomDialyGoals> {
                     iconSize: 20,
                   ),
                   Text(
-                      '${widget.title}:${widget.currentIntake.toStringAsFixed(0)} ml'),
+                      '${widget.currentIntake.toStringAsFixed(0)} ${widget.unit}'),
                   IconButton(
                     onPressed: widget.increasefunction,
                     icon: const Icon(Icons.add),

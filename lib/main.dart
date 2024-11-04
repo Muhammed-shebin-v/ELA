@@ -1,5 +1,8 @@
 import 'package:ela/model/bucket/bucket_model.dart';
 import 'package:ela/model/diary/diary_model.dart';
+import 'package:ela/model/gaols/read/read_model.dart';
+import 'package:ela/model/gaols/sleep/sleep_model.dart';
+import 'package:ela/model/gaols/walk/walk.dart';
 import 'package:ela/model/mood/mood_model.dart';
 import 'package:ela/model/todo/todo_model.dart';
 import 'package:ela/model/gaols/water/water_model.dart';
@@ -29,7 +32,19 @@ void main() async {
    if(!Hive.isAdapterRegistered(WaterModelAdapter().typeId)){
     Hive.registerAdapter(WaterModelAdapter());
   }
+   if(!Hive.isAdapterRegistered(WalkModelAdapter().typeId)){
+    Hive.registerAdapter(WalkModelAdapter());
+  }
+    if(!Hive.isAdapterRegistered(ReadModelAdapter().typeId)){
+    Hive.registerAdapter(ReadModelAdapter());
+  }
+    if(!Hive.isAdapterRegistered(SleepModelAdapter().typeId)){
+    Hive.registerAdapter(SleepModelAdapter());
+  }
+  await Hive.openBox<WalkModel>('walk'); 
   await Hive.openBox<WaterModel>('water');
+  await Hive.openBox<ReadModel>('read');
+  await Hive.openBox<SleepModel>('sleep');
   runApp(const Ela());
 
 }

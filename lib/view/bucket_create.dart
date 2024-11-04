@@ -226,32 +226,6 @@ class _BucketViewState extends State<BucketView> {
       ),
     );
   }
-
-  // void deleteimage() {
-  //   showDialog(
-  //       context: context,
-  //       builder: (BuildContext context) => AlertDialog(
-  //             title: const Text('Delete Image'),
-  //             content: const Text('Do you want to delete image?'),
-  //             actions: [
-  //               TextButton(
-  //                   onPressed: () {
-  //                     Navigator.pop(context);
-  //                   },
-  //                   child: const Text(
-  //                     'cancel',
-  //                     style: TextStyle(color: Colors.black),
-  //                   )),
-  //               TextButton(
-  //                   onPressed: () {
-  //                     Navigator.pop(context);
-  //                   },
-  //                   child: const Text('Delete',
-  //                       style: TextStyle(color: Colors.black)))
-  //             ],
-  //             backgroundColor: const Color.fromRGBO(245, 255, 210, 1),
-  //           ));
-  // }
   void _pickDate() {
     BottomPicker.date(
       pickerTitle: const Text(

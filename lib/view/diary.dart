@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:typed_data';
 import 'package:ela/controllers/diary_function.dart';
 import 'package:ela/controllers/user_functions.dart';
@@ -42,23 +43,22 @@ class _DiaryState extends State<Diary> {
       if (widget.diary!.image2 != null) {
         _image2 = widget.diary!.image2;
       }
-    } else if (widget.selecteddate == null) {
+    }  if (widget.selecteddate == null) {
       todayDiary();
     }
   }
 
   Future<void> todayDiary() async {
     final diaryEntry = await fetchDiary(date: DateTime.now());
-    if(diaryEntry==null){
+    log('fn called');
+    diaryEntry!=null?
       setState(() {
-        diarydata=DiaryModel(date: DateTime.now(), title: '', content: '');
-      });
-    }
-    else{
-    setState(() {
-      diarydata = diaryEntry;
+         diarydata = diaryEntry;
+         log('data fetched and added');
+      })
+    :setState(() {
+      diarydata=DiaryModel(date: DateTime.now(), title: '', content: '');
     });
-    }
     if (diarydata!.title.isNotEmpty) {
       _titleController.text = diarydata!.title;
     }
@@ -75,16 +75,16 @@ class _DiaryState extends State<Diary> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (widget.diary != null) {
-      _titleController.text = widget.diary!.title;
-      _contentController.text = widget.diary!.content;
-    } else {
-      _titleController.text = '';
-      _contentController.text = '';
-    }
-  }
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   if (widget.diary != null) {
+  //     _titleController.text = widget.diary!.title;
+  //     _contentController.text = widget.diary!.content;
+  //   } else {
+  //     _titleController.text = '';
+  //     _contentController.text = '';
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

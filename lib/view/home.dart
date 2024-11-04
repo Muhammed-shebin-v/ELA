@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'package:ela/controllers/quote.dart';
+import 'package:ela/controllers/read_goal.dart';
+import 'package:ela/controllers/sleep_goal.dart';
 import 'package:ela/controllers/todo_function.dart';
+import 'package:ela/controllers/walk.dart';
+import 'package:ela/controllers/water_goal_function.dart';
 import 'package:ela/model/todo/todo_model.dart';
 import 'package:ela/view/todo_list.dart';
 import 'package:ela/view/theme/app_color.dart';
@@ -27,6 +31,21 @@ class _MyWidgetState extends State<HomeScreeen> {
   Quote? currentQuote;
   Timer? _timer;
   List<TodoModel> latestTodos = [];
+    final WaterIntakeService waterService = WaterIntakeService();
+  double currentIntake = 0.0;
+  final double dailyGoal = 4000.0;
+
+  final WalkCountService walkService = WalkCountService();
+  double currentCount = 0.0;
+  final double dailyGoalwalk = 10000.0;
+
+  final ReadPageService readPageService = ReadPageService();
+  double currentPage = 0.0;
+  final double dailyGoalPage = 40.0;
+
+  final SleepService sleepService = SleepService();
+  double currentSleep = 0.0;
+  final double dailyGoalSleep = 8.0;
 
   User? user;
   @override
@@ -37,6 +56,10 @@ class _MyWidgetState extends State<HomeScreeen> {
     _updateQuote();
     _startTimer();
     loadtodo();
+    loadCurrentIntake();
+    loadCurrentCount();
+    loadCurrentPage();
+    loadCurrentSleep();
   }
 
   void loaddata() async {
@@ -48,7 +71,10 @@ class _MyWidgetState extends State<HomeScreeen> {
   }
 
   void loadtodo() async {
-    latestTodos = await fetchLatestTodos();
+    final latestTodosData = await fetchLatestTodos();
+    setState(() {
+      latestTodos=latestTodosData;
+    });
   }
 
   void _updateQuote() {
@@ -204,20 +230,20 @@ class _MyWidgetState extends State<HomeScreeen> {
                                   ),
                                 ))),
                   const Gap(15),
-                  const CustomContainer(
+                   CustomContainer(
                     color: ElaColors.lightgreen,
                     boxshadow: true,
                     child: Padding(
-                      padding: EdgeInsets.all(20.0),
+                      padding: const EdgeInsets.all(20.0),
                       child: Column(
                         children: [
-                          CustomHomeLinearIndicator(title: 'Water', value: 0.9),
-                          Gap(20),
-                          CustomHomeLinearIndicator(title: 'Sleep', value: 0.2),
-                          Gap(20),
-                          CustomHomeLinearIndicator(title: 'Walking', value: 0.7),
-                          Gap(20),
-                          CustomHomeLinearIndicator(title: 'Reading', value: 0.9),
+                          CustomHomeLinearIndicator(title: 'Water', value: currentIntake / dailyGoal),
+                          const Gap(20),
+                          CustomHomeLinearIndicator(title: 'Walk', value:currentCount/dailyGoalwalk),
+                          const Gap(20),
+                          CustomHomeLinearIndicator(title: 'Read', value:currentPage/dailyGoalPage),
+                          const Gap(20),
+                          CustomHomeLinearIndicator(title: 'Sleep', value:currentSleep/dailyGoalSleep) ,
                         ],
                       ),
                     ),
@@ -297,5 +323,29 @@ class _MyWidgetState extends State<HomeScreeen> {
           ),
         ),
         drawer: CustomDrawer(context: context));
+  }
+   Future<void> loadCurrentPage() async {
+    final page = await readPageService.getTodayPageAmount();
+    setState(() {
+      currentPage = page;
+    });
+  }
+  Future<void> loadCurrentSleep() async {
+    final sleep = await sleepService.getTodaySleepAmount();
+    setState(() {
+      currentSleep = sleep;
+    });
+  }
+  Future<void> loadCurrentCount() async {
+    final count = await walkService.getTodaycountAmount();
+    setState(() {
+      currentCount = count;
+    });
+  }
+  Future<void> loadCurrentIntake() async {
+    final intake = await waterService.getTodayIntakeAmount();
+    setState(() {
+      currentIntake = intake;
+    });
   }
 }

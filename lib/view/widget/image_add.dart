@@ -24,7 +24,7 @@ class _CustomImageAddState extends State<CustomImageAdd> {
           widget.onImageSelected(widget.image);
         },
         child: Container(
-            width: 150,
+            width: 145,
             height: 190,
             decoration: BoxDecoration(
               color: const Color.fromRGBO(245, 245, 245, 1),
@@ -37,7 +37,7 @@ class _CustomImageAddState extends State<CustomImageAdd> {
                   ? const Placeholder()
                   : Image.memory(
                       widget.image!,
-                      fit: BoxFit.fill,
+                      fit:BoxFit.fitHeight,
                     ),
             )),
       ),
